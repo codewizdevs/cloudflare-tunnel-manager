@@ -14,19 +14,19 @@ A powerful, modern web interface for managing Cloudflare Tunnels (cloudflared) o
 
 ## 📑 Table of Contents
 
-- [Why Cloudflare Tunnel Manager?](#why-cloudflare-tunnel-manager)
-- [Features](#features)
-- [Screenshots](#screenshots)
-- [Prerequisites](#prerequisites)
-- [Installation](#installation)
-- [Quick Start](#quick-start)
-- [Production Setup with PM2](#production-setup-with-pm2)
-- [Usage Guide](#usage-guide)
-- [Advanced Features](#advanced-features)
-- [API Documentation](#api-documentation)
-- [Troubleshooting](#troubleshooting)
-- [Contributing](#contributing)
-- [License](#license)
+- [Why Cloudflare Tunnel Manager?](#-why-cloudflare-tunnel-manager)
+- [Features](#-features)
+- [Prerequisites](#-prerequisites)
+- [Installation](#-installation)
+- [Quick Start](#-quick-start)
+- [Production Setup with PM2](#-production-setup-with-pm2)
+- [Usage Guide](#-usage-guide)
+- [Advanced Features](#-advanced-features)
+- [API Documentation](#-api-documentation)
+- [Configuration](#️-configuration)
+- [Troubleshooting](#️-troubleshooting)
+- [Contributing](#-contributing)
+- [License](#-license)
 
 ---
 
