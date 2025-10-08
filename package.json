@@ -1,0 +1,32 @@
+{
+  "name": "cloudflare-tunnel-manager",
+  "version": "1.0.0",
+  "description": "Cloudflare Tunnel Management System",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "pm2:start": "pm2 start ecosystem.config.js",
+    "pm2:stop": "pm2 stop cloudflare-tunnel-manager",
+    "pm2:restart": "pm2 restart cloudflare-tunnel-manager",
+    "pm2:logs": "pm2 logs cloudflare-tunnel-manager",
+    "pm2:status": "pm2 status",
+    "pm2:startup": "pm2 startup",
+    "pm2:save": "pm2 save"
+  },
+  "keywords": ["cloudflare", "tunnel", "management"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "body-parser": "^1.20.2",
+    "axios": "^1.6.0",
+    "node-fetch": "^2.7.0",
+    "express-session": "^1.17.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1",
+    "pm2": "^5.3.0"
+  }
+}
+

@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloudflare Tunnel Manager</title>
+    
+    <!-- Tabler CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta17/dist/css/tabler.min.css" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" rel="stylesheet"/>
+    
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/dark-mode.css">
+</head>
+<body data-theme="light">
+    <!-- Login Screen (shown when auth required) -->
+    <div id="loginScreen" class="d-flex align-items-center justify-content-center" style="min-height: 100vh; display: none !important;">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <h2 class="mb-4">
+                                <i class="ti ti-cloud text-primary" style="font-size: 3rem;"></i>
+                            </h2>
+                            <h3 class="card-title mb-3">Cloudflare Tunnel Manager</h3>
+                            <p class="text-muted mb-4">Please enter your password to continue</p>
+                            <form id="loginForm" onsubmit="return false;">
+                                <div class="mb-3">
+                                    <input type="password" class="form-control" id="loginPasswordInput" placeholder="Enter password" required autofocus>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100" id="loginSubmitBtn">
+                                    <i class="ti ti-lock-open"></i> Login
+                                </button>
+                            </form>
+                            <div id="loginError" class="alert alert-danger mt-3" style="display: none;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="page" id="mainApp">
+        <!-- Header -->
+        <header class="navbar navbar-expand-md navbar-light d-print-none">
+            <div class="container-xl">
+                <h1 class="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3">
+                    <a href="/">
+                        <i class="ti ti-cloud"></i>
+                        Cloudflare Tunnel Manager
+                    </a>
+                </h1>
+                <div class="navbar-nav flex-row order-md-last">
+                    <div class="nav-item dropdown">
+                        <a href="#" class="nav-link" id="darkModeToggle">
+                            <i class="ti ti-moon"></i>
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a href="#" class="nav-link" id="settingsBtn">
+                            <i class="ti ti-settings"></i>
+                            Settings
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a href="#" class="nav-link" id="logoutBtn" style="display: none;">
+                            <i class="ti ti-logout"></i>
+                            Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Page Content -->
+        <div class="page-wrapper">
+            <div class="container-xl">
+                <div class="page-header d-print-none">
+                    <div class="row g-2 align-items-center">
+                        <div class="col">
+                            <h2 class="page-title">Tunnels</h2>
+                        </div>
+                        <div class="col-auto">
+                            <select class="form-select" id="environmentFilter">
+                                <option value="">All Environments</option>
+                                <option value="production">Production</option>
+                                <option value="staging">Staging</option>
+                                <option value="development">Development</option>
+                            </select>
+                        </div>
+                        <div class="col-auto">
+                            <button class="btn btn-outline-primary" id="bulkActionsBtn" disabled>
+                                <i class="ti ti-checkbox"></i>
+                                Bulk Actions
+                            </button>
+                        </div>
+                        <div class="col-auto">
+                            <button class="btn btn-success" id="exportBtn">
+                                <i class="ti ti-download"></i>
+                                Export
+                            </button>
+                        </div>
+                        <div class="col-auto">
+                            <button class="btn btn-info" id="importBtn">
+                                <i class="ti ti-upload"></i>
+                                Import
+                            </button>
+                        </div>
+                        <div class="col-auto ms-auto">
+                            <button class="btn btn-primary" id="createTunnelBtn">
+                                <i class="ti ti-plus"></i>
+                                Create Tunnel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page-body">
+                <div class="container-xl">
+                    <!-- System Status Alert -->
+                    <div id="systemAlert" class="alert alert-warning d-none" role="alert">
+                        <div class="d-flex">
+                            <div>
+                                <i class="ti ti-alert-circle alert-icon"></i>
+                            </div>
+                            <div>
+                                <h4 class="alert-title">Requirements Not Installed</h4>
+                                <div class="text-muted" id="systemAlertMessage">Cloudflared is not installed on this system.</div>
+                                <div class="btn-list mt-2">
+                                    <button class="btn btn-warning" id="installBtn">Install Cloudflared</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Credentials Alert -->
+                    <div id="credentialsAlert" class="alert alert-info d-none" role="alert">
+                        <div class="d-flex">
+                            <div>
+                                <i class="ti ti-info-circle alert-icon"></i>
+                            </div>
+                            <div>
+                                <h4 class="alert-title">Cloudflare Credentials Required</h4>
+                                <div class="text-muted">Please configure your Cloudflare API credentials in Settings to manage tunnels.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tunnels List -->
+                    <div class="row row-cards" id="tunnelsList">
+                        <!-- Tunnels will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create/Edit Tunnel Modal -->
+    <div class="modal modal-blur fade" id="tunnelModal" tabindex="-1" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="tunnelModalTitle">Create Tunnel</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info mb-3">
+                        <i class="ti ti-info-circle"></i>
+                        <strong>Important:</strong>
+                        <ul class="mb-0 mt-1">
+                            <li>Tunnel settings cannot be edited after creation</li>
+                            <li>Hostname must be a full domain (e.g., app.example.com)</li>
+                            <li>DNS record will be created automatically</li>
+                        </ul>
+                    </div>
+                    <form id="tunnelForm">
+                        <div class="mb-3">
+                            <label class="form-label">Tunnel Name</label>
+                            <input type="text" class="form-control" id="tunnelName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Zone ID</label>
+                            <input type="text" class="form-control" id="tunnelZoneId" required>
+                            <small class="form-hint">Your Cloudflare Zone ID for the domain</small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Local Port</label>
+                            <input type="number" class="form-control" id="tunnelPort" required>
+                            <small class="form-hint">Local port to tunnel (e.g., 8080)</small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Hostname <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="tunnelHostname" required 
+                                   placeholder="e.g., app.example.com or subdomain.yourdomain.com"
+                                   pattern="^[a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?)*$">
+                            <small class="form-hint">Full domain or subdomain for the tunnel (e.g., app.example.com)</small>
+                            <div class="invalid-feedback">Please enter a valid domain name (e.g., subdomain.example.com)</div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Environment</label>
+                            <select class="form-select" id="tunnelEnvironment">
+                                <option value="production">Production</option>
+                                <option value="staging">Staging</option>
+                                <option value="development">Development</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-check">
+                                <input type="checkbox" class="form-check-input" id="tunnelHealthCheck">
+                                <span class="form-check-label">Enable Health Checks</span>
+                            </label>
+                        </div>
+                        <div id="healthCheckOptions" class="mb-3" style="display:none;">
+                            <label class="form-label">Health Check Interval (seconds)</label>
+                            <input type="number" class="form-control" id="tunnelHealthInterval" value="30" min="10">
+                            <label class="form-label mt-2">Health Check Path</label>
+                            <input type="text" class="form-control" id="tunnelHealthPath" value="/" placeholder="/">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-check">
+                                <input type="checkbox" class="form-check-input" id="tunnelAutoRestart" checked>
+                                <span class="form-check-label">Auto-restart on failure</span>
+                            </label>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-check">
+                                <input type="checkbox" class="form-check-input" id="tunnelAutoStartup">
+                                <span class="form-check-label">Start automatically on app startup</span>
+                            </label>
+                            <small class="form-hint">When PM2 restarts the app, this tunnel will auto-start</small>
+                        </div>
+                        
+                        <hr class="my-4">
+                        
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <label class="form-label">Advanced Routing (Optional)</label>
+                                <button type="button" class="btn btn-sm btn-primary" id="addServiceBtn">
+                                    <i class="ti ti-plus"></i> Add Service
+                                </button>
+                            </div>
+                            <small class="form-hint">Add multiple services with path-based routing. Leave empty for simple routing.</small>
+                        </div>
+                        
+                        <div id="servicesContainer">
+                            <!-- Services will be added here dynamically -->
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="saveTunnelBtn">Create Tunnel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal modal-blur fade" id="settingsModal" tabindex="-1" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Settings</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <ul class="nav nav-tabs mb-3" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#cloudflare-tab">Cloudflare API</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#notifications-tab">Notifications</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#security-tab">Security</button>
+                        </li>
+                    </ul>
+                    
+                    <div class="tab-content">
+                        <!-- Cloudflare Tab -->
+                        <div class="tab-pane active" id="cloudflare-tab">
+                            <form id="settingsForm">
+                                <div class="mb-3">
+                                    <label class="form-label">Authentication Method</label>
+                                    <select class="form-select" id="authMethod">
+                                        <option value="token">API Token (Recommended)</option>
+                                        <option value="key">Global API Key (Not Recommended)</option>
+                                    </select>
+                                </div>
+                        
+                        <div id="tokenFields">
+                            <div class="alert alert-info mb-3">
+                                <h4 class="alert-title">Required Token Permissions</h4>
+                                <p class="mb-2">Create a token at <a href="https://dash.cloudflare.com/profile/api-tokens" target="_blank">Cloudflare Dashboard</a> with:</p>
+                                <ul class="mb-0">
+                                    <li><strong>Account</strong> → Cloudflare Tunnel → <strong>Edit</strong></li>
+                                    <li><strong>Zone</strong> → DNS → <strong>Edit</strong></li>
+                                    <li><strong>Account</strong> → Account Settings → <strong>Read</strong></li>
+                                </ul>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">API Token</label>
+                                <input type="password" class="form-control" id="apiToken" placeholder="Enter your API token">
+                            </div>
+                        </div>
+
+                        <div id="keyFields" class="d-none">
+                            <div class="alert alert-warning mb-3">
+                                <h4 class="alert-title">Global API Key Not Recommended</h4>
+                                <p class="mb-0">Global API Key may not have the correct permissions for Cloudflare Tunnels. Please use an API Token instead.</p>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" id="apiEmail">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Global API Key</label>
+                                <input type="password" class="form-control" id="apiKey">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Account ID (Optional)</label>
+                            <input type="text" class="form-control" id="accountId">
+                            <small class="form-hint">Will be auto-detected if left empty</small>
+                        </div>
+                            </form>
+                        </div>
+                        
+                        <!-- Notifications Tab -->
+                        <div class="tab-pane" id="notifications-tab">
+                            <div class="mb-3">
+                                <label class="form-label">Discord Webhook URL</label>
+                                <input type="url" class="form-control" id="discordWebhook" placeholder="https://discord.com/api/webhooks/...">
+                                <small class="form-hint">Get notifications when tunnels stop, crash, or health checks fail</small>
+                            </div>
+                        </div>
+                        
+                        <!-- Security Tab -->
+                        <div class="tab-pane" id="security-tab">
+                            <div class="mb-3">
+                                <label class="form-check">
+                                    <input type="checkbox" class="form-check-input" id="passwordProtectionEnabled">
+                                    <span class="form-check-label">Enable Password Protection</span>
+                                </label>
+                            </div>
+                            <div id="passwordFields" style="display:none;">
+                                <div class="mb-3">
+                                    <label class="form-label">Dashboard Password</label>
+                                    <input type="password" class="form-control" id="dashboardPassword">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="saveSettingsBtn">Save Settings</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Logs Modal -->
+    <div class="modal modal-blur fade" id="logsModal" tabindex="-1" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Tunnel Logs: <span id="logsTunnelName"></span></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <button class="btn btn-sm btn-primary" id="refreshLogsBtn">
+                            <i class="ti ti-refresh"></i> Refresh
+                        </button>
+                        <button class="btn btn-sm btn-secondary" id="clearLogsBtn">
+                            <i class="ti ti-trash"></i> Clear Display
+                        </button>
+                    </div>
+                    <div id="logsContainer" style="max-height: 400px; overflow-y: auto; background: #1e1e1e; color: #d4d4d4; padding: 1rem; border-radius: 4px; font-family: monospace; font-size: 12px;">
+                        <div class="text-center text-muted">No logs available</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bulk Actions Modal -->
+    <div class="modal modal-blur fade" id="bulkActionsModal" tabindex="-1" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Bulk Actions</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>Selected:</strong> <span id="bulkSelectedCount">0</span> tunnel(s)</p>
+                    <div class="btn-list">
+                        <button class="btn btn-success" id="bulkStartBtn">
+                            <i class="ti ti-player-play"></i> Start All
+                        </button>
+                        <button class="btn btn-warning" id="bulkStopBtn">
+                            <i class="ti ti-player-stop"></i> Stop All
+                        </button>
+                        <button class="btn btn-danger" id="bulkDeleteBtn">
+                            <i class="ti ti-trash"></i> Delete All
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import Modal -->
+    <div class="modal modal-blur fade" id="importModal" tabindex="-1" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Import Configuration</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Select backup file</label>
+                        <input type="file" class="form-control" id="importFile" accept=".json">
+                    </div>
+                    <div class="alert alert-warning">
+                        <strong>Warning:</strong> Importing will merge with existing tunnels. Duplicate IDs will be overwritten.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="importConfirmBtn">Import</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabler JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta17/dist/js/tabler.min.js"></script>
+    
+    <script src="/js/app.js"></script>
+</body>
+</html>
+

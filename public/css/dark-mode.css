@@ -1,0 +1,130 @@
+/* Dark Mode Styles */
+[data-theme="dark"] {
+    --tblr-body-bg: #1a1d2e;
+    --tblr-body-color: #b8bcc8;
+    --tblr-card-bg: #232637;
+    --tblr-border-color: #2d3040;
+}
+
+[data-theme="dark"] body {
+    background-color: #1a1d2e;
+    color: #b8bcc8;
+}
+
+[data-theme="dark"] .card {
+    background-color: #232637;
+    border-color: #2d3040;
+}
+
+[data-theme="dark"] .navbar {
+    background-color: #232637;
+    border-bottom-color: #2d3040;
+}
+
+[data-theme="dark"] .modal-content {
+    background-color: #232637;
+    color: #b8bcc8;
+}
+
+[data-theme="dark"] .form-control,
+[data-theme="dark"] .form-select {
+    background-color: #1a1d2e;
+    border-color: #2d3040;
+    color: #b8bcc8;
+}
+
+[data-theme="dark"] .form-control:focus,
+[data-theme="dark"] .form-select:focus {
+    background-color: #1a1d2e;
+    border-color: #4a7fd5;
+    color: #b8bcc8;
+}
+
+[data-theme="dark"] .alert {
+    background-color: #1a1d2e;
+    border-color: #2d3040;
+    color: #b8bcc8;
+}
+
+[data-theme="dark"] .alert-info {
+    background-color: #1e2a3a;
+    border-color: #2b4564;
+}
+
+[data-theme="dark"] .alert-warning {
+    background-color: #3a2e1e;
+    border-color: #644b2b;
+}
+
+[data-theme="dark"] .alert-danger {
+    background-color: #3a1e1e;
+    border-color: #642b2b;
+}
+
+[data-theme="dark"] .btn-close {
+    filter: invert(1);
+}
+
+[data-theme="dark"] .text-muted {
+    color: #6c757d !important;
+}
+
+[data-theme="dark"] .page-wrapper {
+    background-color: #1a1d2e;
+}
+
+[data-theme="dark"] .nav-tabs {
+    border-bottom-color: #2d3040;
+}
+
+[data-theme="dark"] .nav-tabs .nav-link {
+    color: #b8bcc8;
+}
+
+[data-theme="dark"] .nav-tabs .nav-link.active {
+    background-color: #232637;
+    border-color: #2d3040 #2d3040 #232637;
+    color: #fff;
+}
+
+[data-theme="dark"] .dropdown-menu {
+    background-color: #232637;
+    border-color: #2d3040;
+}
+
+[data-theme="dark"] .dropdown-item {
+    color: #b8bcc8;
+}
+
+[data-theme="dark"] .dropdown-item:hover {
+    background-color: #2d3040;
+}
+
+/* Environment badges in dark mode */
+[data-theme="dark"] .badge.bg-success {
+    background-color: #2d6a4f !important;
+}
+
+[data-theme="dark"] .badge.bg-warning {
+    background-color: #ca6702 !important;
+}
+
+[data-theme="dark"] .badge.bg-info {
+    background-color: #023e7d !important;
+}
+
+/* Login screen dark mode */
+[data-theme="dark"] #loginScreen {
+    background-color: #1a1d2e;
+}
+
+[data-theme="dark"] #loginScreen .card {
+    background-color: #232637;
+    border-color: #2d3040;
+}
+
+[data-theme="dark"] #loginScreen .card-title,
+[data-theme="dark"] #loginScreen p {
+    color: #b8bcc8;
+}
+
