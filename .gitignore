@@ -5,4 +5,5 @@ tunnel-configs/
 logs/
 .DS_Store
 .pm2/
+config.js
 

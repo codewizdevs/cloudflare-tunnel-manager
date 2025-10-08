@@ -147,7 +147,6 @@ function setupEventListeners() {
     document.getElementById('settingsBtn').addEventListener('click', openSettingsModal);
     document.getElementById('saveTunnelBtn').addEventListener('click', saveTunnel);
     document.getElementById('saveSettingsBtn').addEventListener('click', saveSettings);
-    document.getElementById('installBtn')?.addEventListener('click', installCloudflared);
     document.getElementById('darkModeToggle').addEventListener('click', toggleDarkMode);
     document.getElementById('logoutBtn').addEventListener('click', logout);
     document.getElementById('exportBtn').addEventListener('click', exportConfig);
@@ -204,45 +203,14 @@ async function checkSystemStatus() {
         systemStatus = await response.json();
         
         const alert = document.getElementById('systemAlert');
-        const message = document.getElementById('systemAlertMessage');
         
         if (!systemStatus.cloudflaredInstalled) {
             alert.classList.remove('d-none');
-            
-            if (systemStatus.canInstall) {
-                message.textContent = 'Cloudflared is not installed. Click the button below to install it.';
-            } else {
-                message.textContent = 'Cloudflared is not installed. Please install it manually or run with sudo privileges.';
-                document.getElementById('installBtn').disabled = true;
-            }
         } else {
             alert.classList.add('d-none');
         }
     } catch (error) {
         console.error('Error checking system status:', error);
-    }
-}
-
-async function installCloudflared() {
-    const btn = document.getElementById('installBtn');
-    btn.disabled = true;
-    btn.innerHTML = '<span class="loading-spinner"></span> Installing...';
-    
-    try {
-        const response = await fetch('/api/system/install', { method: 'POST' });
-        const result = await response.json();
-        
-        if (result.success) {
-            showNotification('Success', 'Cloudflared installed successfully', 'success');
-            await checkSystemStatus();
-        } else {
-            showNotification('Error', result.message, 'danger');
-        }
-    } catch (error) {
-        showNotification('Error', 'Failed to install cloudflared', 'danger');
-    } finally {
-        btn.disabled = false;
-        btn.innerHTML = 'Install Cloudflared';
     }
 }
 

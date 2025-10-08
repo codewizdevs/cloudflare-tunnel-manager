@@ -132,19 +132,6 @@ Managing Cloudflare Tunnels via command line is tedious. This tool provides:
 
 ---
 
-## 📸 Screenshots
-
-### Main Dashboard
-Modern, clean interface with real-time tunnel status, environment badges, and quick actions.
-
-### Tunnel Creation
-Simple form with validation, environment selection, health checks, and advanced routing options.
-
-### Dark Mode
-Beautiful dark theme perfect for late-night server management.
-
----
-
 ## 📋 Prerequisites
 
 Before installing Cloudflare Tunnel Manager, ensure you have:
@@ -155,14 +142,11 @@ Before installing Cloudflare Tunnel Manager, ensure you have:
 - **npm** (comes with Node.js)
 - **Ubuntu 24.04** or compatible Linux distribution
 - **Cloudflare Account** with API access ([Sign up](https://dash.cloudflare.com/sign-up))
+- **cloudflared** - Cloudflare Tunnel daemon ([Installation guide](https://developers.cloudflare.com/cloudflare-one/connections/connect-apps/install-and-setup/installation/))
 
 ### Recommended for Production
 
 - **PM2** - Process manager for Node.js ([Install guide below](#production-setup-with-pm2))
-
-### Will Be Installed Automatically
-
-- **cloudflared** - Cloudflare Tunnel daemon (auto-installed via web interface)
 
 ---
 
@@ -178,7 +162,22 @@ cd cloudflare-tunnel-manager
 # Or download and extract ZIP
 ```
 
-### Step 2: Install Dependencies
+### Step 2: Install cloudflared
+
+Follow the official Cloudflare guide to install cloudflared on your system:
+[Cloudflare Tunnel Installation](https://developers.cloudflare.com/cloudflare-one/connections/connect-apps/install-and-setup/installation/)
+
+**For Ubuntu/Debian:**
+```bash
+# Download and install
+curl -L --output cloudflared.deb https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb
+sudo dpkg -i cloudflared.deb
+
+# Verify installation
+cloudflared --version
+```
+
+### Step 3: Install Node.js Dependencies
 
 ```bash
 npm install
@@ -190,7 +189,23 @@ This will install:
 - Body-parser (request parsing)
 - Express-session (authentication)
 
-### Step 3: Start the Application
+### Step 4: Configure Port (Optional)
+
+Edit `config.js` to change the server port:
+
+```javascript
+module.exports = {
+    port: 3000,  // Change to your preferred port
+    // ... other settings
+};
+```
+
+Or set environment variable:
+```bash
+export PORT=8080
+```
+
+### Step 5: Start the Application
 
 **For Development/Testing:**
 ```bash
@@ -213,14 +228,14 @@ npm run pm2:startup
 npm run pm2:save
 ```
 
-### Step 4: Access the Web Interface
+### Step 6: Access the Web Interface
 
 Open your browser and navigate to:
 ```
 http://localhost:3000
 ```
 
-Or from another machine:
+Or from another machine (replace with your configured port if changed):
 ```
 http://YOUR_SERVER_IP:3000
 ```
@@ -632,6 +647,40 @@ When password protection is enabled, include session cookie with requests.
 
 ---
 
+## ⚙️ Configuration
+
+### Port Configuration
+
+Change the server port by editing `config.js`:
+
+```javascript
+module.exports = {
+    port: 8080,  // Your preferred port
+    // ... other settings
+};
+```
+
+Or use environment variable:
+```bash
+export PORT=8080
+npm start
+```
+
+### Session Secret
+
+For production, set a custom session secret:
+
+```bash
+export SESSION_SECRET="your-random-secure-secret-here"
+```
+
+Or edit `config.js`:
+```javascript
+sessionSecret: 'your-random-secure-secret-here'
+```
+
+---
+
 ## 🛠️ Troubleshooting
 
 ### Tunnel Won't Start
@@ -819,19 +868,15 @@ npm run dev
 
 ## 📝 License
 
-ISC License - See LICENSE file for details
+ISC License - Free to use, modify, and distribute.
 
 ---
 
-## 🙏 Credits
+## 🙏 About
 
-### Built by CodeWizDev
+**Built by CodeWizDev** - Professional web development and DevOps solutions.
 
-Professional web development and DevOps solutions.
-
-**Website:** [codewizdev.com](https://codewizdev.com)
-
-Specializing in custom development tools, automation systems, and enterprise solutions.
+Visit: [codewizdev.com](https://codewizdev.com)
 
 ---
 

@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
 const session = require('express-session');
+const config = require('./config');
 const systemCheck = require('./backend/systemCheck');
 const cloudflareApi = require('./backend/cloudflareApi');
 const tunnelManager = require('./backend/tunnelManager');
@@ -9,16 +10,16 @@ const dataStore = require('./backend/dataStore');
 const monitoring = require('./backend/monitoring');
 
 const app = express();
-const PORT = 3000;
+const PORT = config.port;
 
 // Middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(session({
-    secret: process.env.SESSION_SECRET || 'cloudflare-tunnel-manager-secret-key',
+    secret: config.sessionSecret,
     resave: false,
     saveUninitialized: false,
-    cookie: { maxAge: 24 * 60 * 60 * 1000 } // 24 hours
+    cookie: { maxAge: config.sessionTimeout }
 }));
 
 // Authentication middleware
