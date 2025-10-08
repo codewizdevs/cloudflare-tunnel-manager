@@ -191,7 +191,7 @@ This will install:
 
 ### Step 4: Configure Port (Optional)
 
-Edit `config.js` to change the server port:
+Rename `config.sample.js` to `config.js` and change the server port if needed:
 
 ```javascript
 module.exports = {
