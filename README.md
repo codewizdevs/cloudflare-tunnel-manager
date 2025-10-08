@@ -156,10 +156,10 @@ Before installing Cloudflare Tunnel Manager, ensure you have:
 
 ```bash
 # Clone the repository
-git clone https://github.com/YOUR_USERNAME/cloudflare-tunnel-manager.git
+git clone https://github.com/codewizdevs/cloudflare-tunnel-manager.git
 cd cloudflare-tunnel-manager
 
-# Or download and extract ZIP
+# Or download and extract ZIP from GitHub releases
 ```
 
 ### Step 2: Install cloudflared
@@ -832,7 +832,8 @@ Contributions are welcome! Here's how you can help:
 ### Development Setup
 
 ```bash
-# Clone repository
+# Fork the repository on GitHub
+# Clone your fork
 git clone https://github.com/YOUR_USERNAME/cloudflare-tunnel-manager.git
 cd cloudflare-tunnel-manager
 
@@ -844,7 +845,7 @@ npm run dev
 
 # Make your changes
 # Test thoroughly
-# Submit PR
+# Submit PR to https://github.com/codewizdevs/cloudflare-tunnel-manager
 ```
 
 ---
@@ -892,7 +893,7 @@ If this tool saves you time, please:
 
 ## 📞 Support & Documentation
 
-- **Issues:** [GitHub Issues](https://github.com/YOUR_USERNAME/cloudflare-tunnel-manager/issues)
+- **Issues:** [GitHub Issues](https://github.com/codewizdevs/cloudflare-tunnel-manager/issues)
 - **Documentation:** See PM2_SETUP.md for detailed PM2 guide
 - **Cloudflare Docs:** [Cloudflare Tunnel Documentation](https://developers.cloudflare.com/cloudflare-one/connections/connect-apps/)
 
